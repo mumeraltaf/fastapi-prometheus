@@ -1,10 +1,13 @@
 from fastapi import FastAPI
-from prometheus_client import make_asgi_app
+from prometheus_client import make_asgi_app, Counter
 import uvicorn
 import asyncio
 
 # Main FastAPI app
 app = FastAPI()
+
+
+request_counter = Counter('request_count', 'Total number of requests')
 
 @app.get("/")
 async def root():
@@ -12,6 +15,7 @@ async def root():
 
 @app.get("/hello/{name}")
 async def say_hello(name: str):
+    request_counter.inc()
     return {"message": f"Hello {name}"}
 
 # Prometheus metrics app
